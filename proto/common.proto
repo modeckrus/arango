@@ -1,0 +1,20 @@
+syntax = "proto3";
+package api;
+option go_package = "./../api";
+message AuthI{
+    string token = 1;
+    string locale = 2;
+}
+message GetByIdI{
+    AuthI auth = 1;
+    string id = 2;
+}
+message StatusR{
+    bool ok = 1;
+}
+message SearchI{
+    AuthI auth = 1;
+    optional string text = 2;
+    int64 skip = 3;
+    int64 limit = 4;
+}
