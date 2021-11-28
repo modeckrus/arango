@@ -98,23 +98,19 @@ func (i User) ToProto() *api.UserR {
 }
 
 type UserItem struct {
-	Id    string    `json:"id"`
+	Id    string    `json:"_id"`
 	Name  string    `json:"name" bson:"name"`
 	Level UserLevel `json:"level"`
 }
 type UserList struct {
-	List  []UserItem `json:"list"`
-	Total int64      `json:"total"`
+	List  []UserWithFile `json:"list"`
+	Total int64          `json:"total"`
 }
 
 func (i UserList) ToProto() *api.UserListR {
 	list := []*api.UserItemR{}
 	for _, item := range i.List {
-		list = append(list, &api.UserItemR{
-			Id:    item.Id,
-			Name:  item.Name,
-			Level: api.UserLevelE(item.Level),
-		})
+		list = append(list, item.ToProto())
 	}
 	return &api.UserListR{
 		Total: i.Total,
@@ -130,3 +126,27 @@ const (
 	UserLevel_Moderator UserLevel = 2
 	UserLevel_Admin     UserLevel = 3
 )
+
+type UserWithFile struct {
+	User
+	Files []File `json:"files"`
+}
+
+func (i UserWithFile) ToProto() *api.UserItemR {
+	var avatar *api.FileR
+	if i.Avatar != nil {
+		avatar = i.Avatar.ToProto()
+	}
+	var files []*api.FileR
+	for _, file := range i.Files {
+		files = append(files, file.ToProto())
+	}
+	return &api.UserItemR{
+		Id:     i.Id,
+		Name:   i.Name,
+		Email:  i.Email,
+		Avatar: avatar,
+		Files:  files,
+		Level:  api.UserLevelE(i.Level),
+	}
+}

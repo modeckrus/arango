@@ -1,14 +1,12 @@
-import '../generated/common.pb.dart';
-import '../generated/file.pbenum.dart';
-import '../model/auth.dart';
-import '../model/file.dart';
+import 'package:fixnum/fixnum.dart' as f;
 import 'package:get_it/get_it.dart';
 import 'package:grpc/grpc.dart';
-
-import '../generated/user.pbgrpc.dart';
-import '../model/user.dart';
-import 'package:fixnum/fixnum.dart' as f;
 import 'package:hive/hive.dart';
+
+import '../generated/common.pb.dart';
+import '../generated/user.pbgrpc.dart';
+import '../model/auth.dart';
+import '../model/user.dart';
 
 class UserService {
   ClientChannel channel;
@@ -53,5 +51,34 @@ class UserService {
       result.add(UserItem.fromProto(element));
     }
     return result;
+  }
+  Future<User?> create({required String name, required String email, required UserLevel level, required String password})async{
+    try {
+      final user = await client.create(CreateUserI(
+        auth: GetIt.I.get<Auth>().toProto(),
+        name: name,
+        email: email,
+        level: userLevelToProto(level),
+        password: password
+      ));
+      return User.fromProto(user);
+    } catch (e) {
+      throw e;
+    }
+  }
+  Future<User?> update({required User i, String? password})async{
+    try {
+      final user = await client.update(UpdateUserI(
+        auth: GetIt.I.get<Auth>().toProto(),
+        id: i.id,
+        name: i.name,
+        email: i.email,
+        level: userLevelToProto(i.level),
+        password: password
+      ));
+      return User.fromProto(user);
+    } catch (e) {
+      throw e;
+    }
   }
 }

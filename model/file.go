@@ -14,6 +14,21 @@ type File struct {
 	Name string   `json:"name"`
 	Type FileType `json:"type"`
 }
+type FileList struct {
+	Files []File
+	Total int64
+}
+
+func (i FileList) ToProto() *api.FileList {
+	list := []*api.FileR{}
+	for _, file := range i.Files {
+		list = append(list, file.ToProto())
+	}
+	return &api.FileList{
+		Files: list,
+	}
+}
+
 type CreateFile struct {
 	Name string   `json:"name"`
 	Type FileType `json:"type"`

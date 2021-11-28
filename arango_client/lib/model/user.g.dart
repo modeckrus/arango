@@ -19,20 +19,29 @@ class UserItemAdapter extends TypeAdapter<UserItem> {
     return UserItem(
       id: fields[0] as String,
       name: fields[1] as String,
-      level: fields[2] as UserLevel,
+      avatar: fields[3] as File?,
+      email: fields[2] as String,
+      level: fields[4] as UserLevel,
+      files: (fields[5] as List).cast<File>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserItem obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.level);
+      ..write(obj.email)
+      ..writeByte(3)
+      ..write(obj.avatar)
+      ..writeByte(4)
+      ..write(obj.level)
+      ..writeByte(5)
+      ..write(obj.files);
   }
 
   @override

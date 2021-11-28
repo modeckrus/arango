@@ -1,0 +1,1 @@
+docker run -p 8529:8529 -e ARANGO_NO_AUTH=true arangodb/arangodb:3.8.3

@@ -1,12 +1,6 @@
 ///
-//  Generated code. Do not modify.
-//  source: user.proto
-//
-// @dart = 2.12
-// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields,deprecated_member_use_from_same_package
-
-import 'dart:core' as $core;
 import 'dart:convert' as $convert;
+import 'dart:core' as $core;
 import 'dart:typed_data' as $typed_data;
 @$core.Deprecated('Use userLevelEDescriptor instead')
 const UserLevelE$json = const {
@@ -42,12 +36,18 @@ const UserItemR$json = const {
   '2': const [
     const {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
     const {'1': 'name', '3': 2, '4': 1, '5': 9, '10': 'name'},
-    const {'1': 'level', '3': 3, '4': 1, '5': 14, '6': '.api.UserLevelE', '10': 'level'},
+    const {'1': 'email', '3': 3, '4': 1, '5': 9, '10': 'email'},
+    const {'1': 'avatar', '3': 4, '4': 1, '5': 11, '6': '.api.FileR', '9': 0, '10': 'avatar', '17': true},
+    const {'1': 'level', '3': 5, '4': 1, '5': 14, '6': '.api.UserLevelE', '10': 'level'},
+    const {'1': 'files', '3': 6, '4': 3, '5': 11, '6': '.api.FileR', '10': 'files'},
+  ],
+  '8': const [
+    const {'1': '_avatar'},
   ],
 };
 
 /// Descriptor for `UserItemR`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List userItemRDescriptor = $convert.base64Decode('CglVc2VySXRlbVISDgoCaWQYASABKAlSAmlkEhIKBG5hbWUYAiABKAlSBG5hbWUSJQoFbGV2ZWwYAyABKA4yDy5hcGkuVXNlckxldmVsRVIFbGV2ZWw=');
+final $typed_data.Uint8List userItemRDescriptor = $convert.base64Decode('CglVc2VySXRlbVISDgoCaWQYASABKAlSAmlkEhIKBG5hbWUYAiABKAlSBG5hbWUSFAoFZW1haWwYAyABKAlSBWVtYWlsEicKBmF2YXRhchgEIAEoCzIKLmFwaS5GaWxlUkgAUgZhdmF0YXKIAQESJQoFbGV2ZWwYBSABKA4yDy5hcGkuVXNlckxldmVsRVIFbGV2ZWwSIAoFZmlsZXMYBiADKAsyCi5hcGkuRmlsZVJSBWZpbGVzQgkKB19hdmF0YXI=');
 @$core.Deprecated('Use userListRDescriptor instead')
 const UserListR$json = const {
   '1': 'UserListR',

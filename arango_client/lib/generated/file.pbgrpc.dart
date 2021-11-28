@@ -23,6 +23,10 @@ class FileSClient extends $grpc.Client {
       '/api.FileS/Id',
       ($1.GetByIdI value) => value.writeToBuffer(),
       ($core.List<$core.int> value) => $0.FileR.fromBuffer(value));
+  static final _$user = $grpc.ClientMethod<$1.GetByIdI, $0.FileList>(
+      '/api.FileS/User',
+      ($1.GetByIdI value) => value.writeToBuffer(),
+      ($core.List<$core.int> value) => $0.FileList.fromBuffer(value));
 
   FileSClient($grpc.ClientChannel channel,
       {$grpc.CallOptions? options,
@@ -37,6 +41,11 @@ class FileSClient extends $grpc.Client {
   $grpc.ResponseFuture<$0.FileR> id($1.GetByIdI request,
       {$grpc.CallOptions? options}) {
     return $createUnaryCall(_$id, request, options: options);
+  }
+
+  $grpc.ResponseFuture<$0.FileList> user($1.GetByIdI request,
+      {$grpc.CallOptions? options}) {
+    return $createUnaryCall(_$user, request, options: options);
   }
 }
 
@@ -58,6 +67,13 @@ abstract class FileSServiceBase extends $grpc.Service {
         false,
         ($core.List<$core.int> value) => $1.GetByIdI.fromBuffer(value),
         ($0.FileR value) => value.writeToBuffer()));
+    $addMethod($grpc.ServiceMethod<$1.GetByIdI, $0.FileList>(
+        'User',
+        user_Pre,
+        false,
+        false,
+        ($core.List<$core.int> value) => $1.GetByIdI.fromBuffer(value),
+        ($0.FileList value) => value.writeToBuffer()));
   }
 
   $async.Future<$0.FileR> create_Pre(
@@ -70,6 +86,12 @@ abstract class FileSServiceBase extends $grpc.Service {
     return id(call, await request);
   }
 
+  $async.Future<$0.FileList> user_Pre(
+      $grpc.ServiceCall call, $async.Future<$1.GetByIdI> request) async {
+    return user(call, await request);
+  }
+
   $async.Future<$0.FileR> create($grpc.ServiceCall call, $0.AddFileI request);
   $async.Future<$0.FileR> id($grpc.ServiceCall call, $1.GetByIdI request);
+  $async.Future<$0.FileList> user($grpc.ServiceCall call, $1.GetByIdI request);
 }

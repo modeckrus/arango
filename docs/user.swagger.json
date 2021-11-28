@@ -67,8 +67,20 @@
         "name": {
           "type": "string"
         },
+        "email": {
+          "type": "string"
+        },
+        "avatar": {
+          "$ref": "#/definitions/apiFileR"
+        },
         "level": {
           "$ref": "#/definitions/apiUserLevelE"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiFileR"
+          }
         }
       }
     },
@@ -118,14 +130,11 @@
     "protobufAny": {
       "type": "object",
       "properties": {
-        "typeUrl": {
+        "@type": {
           "type": "string"
-        },
-        "value": {
-          "type": "string",
-          "format": "byte"
         }
-      }
+      },
+      "additionalProperties": {}
     },
     "rpcStatus": {
       "type": "object",

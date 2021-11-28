@@ -1,4 +1,4 @@
-import 'package:arango_client/generated/file.pbgrpc.dart';
+import '../generated/file.pbgrpc.dart';
 
 import '../generated/common.pb.dart';
 import '../generated/file.pbenum.dart';
@@ -27,6 +27,20 @@ class FileService {
           name: name,
           type: fileTypeToProto(type)));
       return File.fromProto(resp);
+    } catch (e) {
+      throw e;
+    }
+  }
+  Future<List<File>?> user({required String id})async{
+    try {
+      final resp = await client.user(GetByIdI(
+          auth: GetIt.I.get<Auth>().toProto(),
+          id: id));
+      List<File> result = [];
+      for (var file in resp.files) {
+        result.add(File.fromProto(file));
+      }
+      return result;
     } catch (e) {
       throw e;
     }

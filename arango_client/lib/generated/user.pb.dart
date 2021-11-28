@@ -126,7 +126,10 @@ class UserItemR extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'UserItemR', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'api'), createEmptyInstance: create)
     ..aOS(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'id')
     ..aOS(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'name')
-    ..e<UserLevelE>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'level', $pb.PbFieldType.OE, defaultOrMaker: UserLevelE.Unauth, valueOf: UserLevelE.valueOf, enumValues: UserLevelE.values)
+    ..aOS(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'email')
+    ..aOM<$0.FileR>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'avatar', subBuilder: $0.FileR.create)
+    ..e<UserLevelE>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'level', $pb.PbFieldType.OE, defaultOrMaker: UserLevelE.Unauth, valueOf: UserLevelE.valueOf, enumValues: UserLevelE.values)
+    ..pc<$0.FileR>(6, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'files', $pb.PbFieldType.PM, subBuilder: $0.FileR.create)
     ..hasRequiredFields = false
   ;
 
@@ -134,7 +137,10 @@ class UserItemR extends $pb.GeneratedMessage {
   factory UserItemR({
     $core.String? id,
     $core.String? name,
+    $core.String? email,
+    $0.FileR? avatar,
     UserLevelE? level,
+    $core.Iterable<$0.FileR>? files,
   }) {
     final _result = create();
     if (id != null) {
@@ -143,8 +149,17 @@ class UserItemR extends $pb.GeneratedMessage {
     if (name != null) {
       _result.name = name;
     }
+    if (email != null) {
+      _result.email = email;
+    }
+    if (avatar != null) {
+      _result.avatar = avatar;
+    }
     if (level != null) {
       _result.level = level;
+    }
+    if (files != null) {
+      _result.files.addAll(files);
     }
     return _result;
   }
@@ -188,13 +203,36 @@ class UserItemR extends $pb.GeneratedMessage {
   void clearName() => clearField(2);
 
   @$pb.TagNumber(3)
-  UserLevelE get level => $_getN(2);
+  $core.String get email => $_getSZ(2);
   @$pb.TagNumber(3)
-  set level(UserLevelE v) { setField(3, v); }
+  set email($core.String v) { $_setString(2, v); }
   @$pb.TagNumber(3)
-  $core.bool hasLevel() => $_has(2);
+  $core.bool hasEmail() => $_has(2);
   @$pb.TagNumber(3)
-  void clearLevel() => clearField(3);
+  void clearEmail() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $0.FileR get avatar => $_getN(3);
+  @$pb.TagNumber(4)
+  set avatar($0.FileR v) { setField(4, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasAvatar() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearAvatar() => clearField(4);
+  @$pb.TagNumber(4)
+  $0.FileR ensureAvatar() => $_ensure(3);
+
+  @$pb.TagNumber(5)
+  UserLevelE get level => $_getN(4);
+  @$pb.TagNumber(5)
+  set level(UserLevelE v) { setField(5, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasLevel() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearLevel() => clearField(5);
+
+  @$pb.TagNumber(6)
+  $core.List<$0.FileR> get files => $_getList(5);
 }
 
 class UserListR extends $pb.GeneratedMessage {

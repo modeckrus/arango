@@ -28,6 +28,17 @@
         }
       }
     },
+    "apiFileList": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/apiFileR"
+          }
+        }
+      }
+    },
     "apiFileR": {
       "type": "object",
       "properties": {
@@ -53,14 +64,11 @@
     "protobufAny": {
       "type": "object",
       "properties": {
-        "typeUrl": {
+        "@type": {
           "type": "string"
-        },
-        "value": {
-          "type": "string",
-          "format": "byte"
         }
-      }
+      },
+      "additionalProperties": {}
     },
     "rpcStatus": {
       "type": "object",

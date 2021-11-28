@@ -54,3 +54,15 @@ func (s FileService) Id(ctx context.Context, i *api.GetByIdI) (*api.FileR, error
 	file := *filePtr
 	return file.ToProto(), nil
 }
+func (s FileService) User(ctx context.Context, i *api.GetByIdI) (*api.FileList, error) {
+	ctx = model.SignMethod(ctx, "FileService.User")
+	ctx, err := s.Auth(ctx, i.Auth, 1)
+	if err != nil {
+		return nil, err
+	}
+	files, err := s.File.ByUser(ctx, i.Id)
+	if err != nil {
+		return nil, err
+	}
+	return files.ToProto(), nil
+}

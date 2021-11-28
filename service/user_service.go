@@ -32,9 +32,10 @@ func (s UserService) Create(ctx context.Context, i *api.CreateUserI) (*api.UserR
 		return nil, err
 	}
 	createUser := model.CreateUser{
-		Name:  i.Name,
-		Email: i.Email,
-		Level: model.UserLevel(i.Level),
+		Name:     i.Name,
+		Email:    i.Email,
+		Level:    model.UserLevel(i.Level),
+		Password: i.Password,
 	}
 	newUserPtr, err := s.User.Create(ctx, createUser)
 	if err != nil {
@@ -50,16 +51,27 @@ func (s UserService) Update(ctx context.Context, i *api.UpdateUserI) (*api.UserR
 	if err != nil {
 		return nil, err
 	}
+	userPtr, err := s.User.Id(ctx, i.Id)
+	if err != nil {
+		return nil, err
+	}
+	user := *userPtr
+	err = s.ValidatePermissionForUserUpdate(ctx, user)
+	if err != nil {
+		return nil, err
+	}
 	var level *model.UserLevel
 	if i.Level != nil {
 		lvl := model.UserLevel(*i.Level)
 		level = &lvl
 	}
 	newUser := model.UpdateUser{
-		Name:   i.Name,
-		Email:  i.Email,
-		Level:  level,
-		Avatar: i.AvatarId,
+		Id:       i.Id,
+		Name:     i.Name,
+		Email:    i.Email,
+		Level:    level,
+		Avatar:   i.AvatarId,
+		Password: i.Password,
 	}
 	newUserPtr, err := s.User.Update(ctx, newUser)
 	if err != nil {

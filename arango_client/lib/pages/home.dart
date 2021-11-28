@@ -1,3 +1,7 @@
+import 'package:arango_client/pages/user/user_create.dart';
+
+import 'user/user.dart';
+
 import '../auth/auth_bloc.dart';
 import '../model/user.dart';
 import '../service/user.dart';
@@ -57,6 +61,12 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
     return SafeArea(
       child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: (){
+            Navigator.pushNamed(context, '/user/create');
+          },
+        ),
         appBar: AppBar(
             actions: [
               IconButton(
@@ -64,11 +74,13 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                     BlocProvider.of<AuthBloc>(context).add(AuthLogOutE());
                   },
                   icon: Icon(Icons.logout)),
-              IconButton(onPressed: () {}, icon: Icon(Icons.file_copy)),
+              IconButton(onPressed: () {
+                Navigator.pushNamed(context, '/file/create');
+              }, icon: Icon(Icons.file_copy)),
             ],
             title: TextField(
               controller: searchController,
-              decoration: InputDecoration(labelText: 'Search'),
+              decoration: const InputDecoration(labelText: 'Search'),
             )),
         body: BlocListener<SearchBloc, SearchState>(
           listener: (context, state) {
@@ -99,7 +111,15 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                     return ListTile(
                       leading: leading,
                       title: Text(user.name),
-                      subtitle: Text(user.id),
+                      subtitle: ListTile(
+                        title: Text(user.id),
+                        subtitle: Text(user.files.join(' ')),
+                      ),
+                      onLongPress: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context){
+                          return UserCreatePage(user: user.toUser());
+                        }));
+                      },
                     );
                   },
                   itemCount: users.length,

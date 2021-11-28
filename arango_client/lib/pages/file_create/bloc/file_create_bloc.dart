@@ -1,5 +1,5 @@
-import 'package:arango_client/model/file.dart';
-import 'package:arango_client/service/file.dart';
+import '../../../model/file.dart';
+import '../../../service/file.dart';
 import 'package:bloc/bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta/meta.dart';

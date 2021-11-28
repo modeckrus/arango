@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 type FileSClient interface {
 	Create(ctx context.Context, in *AddFileI, opts ...grpc.CallOption) (*FileR, error)
 	Id(ctx context.Context, in *GetByIdI, opts ...grpc.CallOption) (*FileR, error)
+	User(ctx context.Context, in *GetByIdI, opts ...grpc.CallOption) (*FileList, error)
 }
 
 type fileSClient struct {
@@ -48,12 +49,22 @@ func (c *fileSClient) Id(ctx context.Context, in *GetByIdI, opts ...grpc.CallOpt
 	return out, nil
 }
 
+func (c *fileSClient) User(ctx context.Context, in *GetByIdI, opts ...grpc.CallOption) (*FileList, error) {
+	out := new(FileList)
+	err := c.cc.Invoke(ctx, "/api.FileS/User", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FileSServer is the server API for FileS service.
 // All implementations must embed UnimplementedFileSServer
 // for forward compatibility
 type FileSServer interface {
 	Create(context.Context, *AddFileI) (*FileR, error)
 	Id(context.Context, *GetByIdI) (*FileR, error)
+	User(context.Context, *GetByIdI) (*FileList, error)
 	mustEmbedUnimplementedFileSServer()
 }
 
@@ -66,6 +77,9 @@ func (UnimplementedFileSServer) Create(context.Context, *AddFileI) (*FileR, erro
 }
 func (UnimplementedFileSServer) Id(context.Context, *GetByIdI) (*FileR, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Id not implemented")
+}
+func (UnimplementedFileSServer) User(context.Context, *GetByIdI) (*FileList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method User not implemented")
 }
 func (UnimplementedFileSServer) mustEmbedUnimplementedFileSServer() {}
 
@@ -116,6 +130,24 @@ func _FileS_Id_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FileS_User_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetByIdI)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FileSServer).User(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.FileS/User",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FileSServer).User(ctx, req.(*GetByIdI))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FileS_ServiceDesc is the grpc.ServiceDesc for FileS service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,6 +162,10 @@ var FileS_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Id",
 			Handler:    _FileS_Id_Handler,
+		},
+		{
+			MethodName: "User",
+			Handler:    _FileS_User_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

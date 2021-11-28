@@ -1,4 +1,6 @@
-import 'package:arango_client/service/file.dart';
+import 'pages/file_create/file_create.dart';
+import 'pages/user/user_create.dart';
+import 'service/file.dart';
 
 import 'auth/auth_bloc.dart';
 import 'model/auth.dart';
@@ -16,7 +18,10 @@ import 'package:hive_flutter/adapters.dart';
 var host = "localhost";
 var port = 50050;
 void main() async {
-  await Hive.initFlutter();
+  final appName = 'arango';
+  final storagePath = '/home/modeck/hive/';
+
+  await Hive.initFlutter(storagePath+appName);
   Hive.registerAdapter(UserLevelAdapter());
   Hive.registerAdapter(FileTypeAdapter());
   Hive.registerAdapter(AuthAdapter());
@@ -35,8 +40,10 @@ void main() async {
       ));
   GetIt.I.registerSingleton<ClientChannel>(channel);
   UserService userService = UserService(channel: channel);
-  FileService fileService = FileService(channel: channel);
   GetIt.I.registerSingleton<UserService>(userService);
+  FileService fileService = FileService(channel: channel);
+  GetIt.I.registerSingleton<FileService>(fileService);
+  
   runApp(const MyApp());
 }
 
@@ -53,6 +60,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       darkTheme: ThemeData.dark(),
       themeMode: ThemeMode.dark,
+      routes: {
+        '/file/create':(context)=>const FileCreatePage(),
+        '/user/create':(context)=>const UserCreatePage(),
+      },
       home: BlocProvider(
         create: (context) => AuthBloc()..add(AuthInitialE()),
         child: BlocBuilder<AuthBloc, AuthState>(

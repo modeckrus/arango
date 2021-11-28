@@ -22,16 +22,43 @@ class UserItem {
   @HiveField(1)
   String name;
   @HiveField(2)
+  String email;
+  @HiveField(3)
+  File? avatar;
+  @HiveField(4)
   UserLevel level;
-  UserItem({
-    required this.id,
-    required this.name,
-    required this.level,
-  });
-  factory UserItem.fromProto(UserItemR user) {
-    return UserItem(
-        id: user.id, name: user.name, level: userLevelFromProto(user.level));
+  @HiveField(5)
+  List<File> files;
+  User toUser(){
+    return User(id: id, email: email, name: name, avatar: avatar, level:level);
   }
+  factory UserItem.fromProto(UserItemR user) {
+    File? avatar;
+    if (user.hasAvatar()) {
+      avatar = File(
+          id: user.avatar.id,
+          name: user.avatar.name,
+          type: fileTypeFromProto(user.avatar.type));
+    }
+    List<File> files = [];
+    for (var file in user.files) {
+      files.add(File.fromProto(file));
+    }
+    return UserItem(
+        id: user.id,
+        name: user.name,
+        avatar: avatar,
+        email: user.email,
+        level: userLevelFromProto(user.level),
+        files: files);
+  }
+  UserItem(
+      {required this.id,
+      required this.name,
+      required this.avatar,
+      required this.email,
+      required this.level,
+      this.files = const []});
 }
 
 @HiveType(typeId: 0)
@@ -88,5 +115,16 @@ UserLevel userLevelFromProto(UserLevelE i) {
       return UserLevel.unauth;
     default:
       return UserLevel.unauth;
+  }
+}
+
+UserLevelE userLevelToProto(UserLevel i) {
+  switch (i) {
+    case UserLevel.auth:
+      return UserLevelE.Auth;
+    case UserLevel.unauth:
+      return UserLevelE.Unauth;
+    default:
+      return UserLevelE.Unauth;
   }
 }

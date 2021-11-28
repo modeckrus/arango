@@ -17,7 +17,10 @@ message UserR{
 message UserItemR{
     string id = 1;
     string name = 2;
-    UserLevelE level = 3;
+    string email = 3;
+    optional FileR avatar = 4;
+    UserLevelE level = 5;
+    repeated FileR files = 6;
 }
 message UserListR{
     repeated UserItemR list = 1;

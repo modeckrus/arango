@@ -1,4 +1,4 @@
-import 'package:arango_client/generated/file.pb.dart';
+import '../generated/file.pb.dart';
 import 'package:hive/hive.dart';
 
 part 'file.g.dart';
@@ -43,5 +43,9 @@ class File extends HiveObject {
   File({required this.id, required this.name, required this.type});
   factory File.fromProto(FileR i) {
     return File(id: i.id, name: i.name, type: fileTypeFromProto(i.type));
+  }
+  @override
+  String toString() {
+    return '$name';
   }
 }

@@ -1,5 +1,5 @@
-import 'package:arango_client/model/file.dart';
-import 'package:arango_client/pages/file_create/bloc/file_create_bloc.dart';
+import '../../model/file.dart';
+import 'bloc/file_create_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,49 +21,70 @@ class _FileCreatePageState extends State<FileCreatePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: false,
-      child: Scaffold(
-        appBar: AppBar(
-          actions: [],
-        ),
-        body: Column(
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            DropdownButton<FileType>(
-              items: const [
-                DropdownMenuItem(
-                  child: Text('file'),
-                  value: FileType.file,
-                ),
-                DropdownMenuItem(
-                  child: Text('image'),
-                  value: FileType.image,
-                ),
-              ],
-              onChanged: (newType) {
-                if (newType != null) {
-                  setState(() {
-                    fileType = newType;
-                  });
-                }
-              },
-              value: fileType,
-            ),
-            MaterialButton(
-              onPressed: () {
-                BlocProvider.of<FileCreateBloc>(context).add(FileCreateInitialE(
-                    name: nameController.text, type: fileType));
-              },
-              child: const Text(
-                'Add',
-                style: TextStyle(fontSize: 24),
+    return BlocProvider(
+      create: (context) => FileCreateBloc(),
+      child: SafeArea(
+        top: false,
+        child: Builder(
+          builder: (context) {
+            return Scaffold(
+              appBar: AppBar(
+                actions: [],
               ),
-            )
-          ],
+              body: BlocListener<FileCreateBloc, FileCreateState>(
+                listener: (context, state) {
+                  String text = '';
+                  if(state is FileCreateErrorS){
+                    text = 'Error: ${state.error}';
+                  }else if(state is FileCreateLoadingS){
+                    text = 'Loading...';
+                  }else if(state is FileCreateSuccesS){
+                    text = 'Succes';
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+                },
+                child: Column(
+                  children: [
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(labelText: 'Name'),
+                    ),
+                    DropdownButton<FileType>(
+                      items: const [
+                        DropdownMenuItem(
+                          child: Text('file'),
+                          value: FileType.file,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('image'),
+                          value: FileType.image,
+                        ),
+                      ],
+                      onChanged: (newType) {
+                        if (newType != null) {
+                          setState(() {
+                            fileType = newType;
+                          });
+                        }
+                      },
+                      value: fileType,
+                    ),
+                    MaterialButton(
+                      onPressed: () {
+                        BlocProvider.of<FileCreateBloc>(context).add(
+                            FileCreateInitialE(
+                                name: nameController.text, type: fileType));
+                      },
+                      child: const Text(
+                        'Add',
+                        style: TextStyle(fontSize: 24),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          }
         ),
       ),
     );

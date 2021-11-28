@@ -35,6 +35,37 @@ func (s AuthService) Auth(ctx context.Context, i *api.AuthI, level model.UserLev
 	return ctx, nil
 
 }
+func (s AuthService) ValidatePermission(ctx context.Context, level model.UserLevel, uid *string) error {
+	user, ok := ctx.Value(model.UserContext{}).(model.User)
+	if !ok {
+		return logger.SomethingWrong(ctx)
+	}
+	if uid != nil {
+		if user.Id == *uid {
+			return nil
+		}
+	}
+	if user.Level < level {
+		return logger.PermissionDenied(ctx)
+	}
+	return nil
+}
+func (s AuthService) ValidatePermissionForUserUpdate(ctx context.Context, u model.User) error {
+	user, ok := ctx.Value(model.UserContext{}).(model.User)
+	if !ok {
+		return logger.SomethingWrong(ctx)
+	}
+	if user.Id == u.Id {
+		return nil
+	}
+	if user.Level < model.UserLevel_Moderator {
+		return logger.PermissionDenied(ctx)
+	}
+	if user.Level < u.Level {
+		return logger.PermissionDenied(ctx)
+	}
+	return nil
+}
 func (s AuthService) UserToAuth(ctx context.Context, user model.User, locale string) *api.AuthI {
 	return &api.AuthI{
 		Token:  user.Id,

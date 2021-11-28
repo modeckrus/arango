@@ -28,6 +28,7 @@ func NewUserArango(ctx context.Context, c driver.Client) (UserArango, error) {
 		if err != nil {
 			return result, err
 		}
+
 	}
 	db, err := c.Database(ctx, dbName)
 	if err != nil {
@@ -106,7 +107,7 @@ func (s UserArango) Update(ctx context.Context, i model.UpdateUser) (*model.User
 	}
 	meta, err := s.Coll.UpdateDocument(ctx, docId.Key(), i)
 	if err != nil {
-		return nil, err
+		return nil, logger.Arango(ctx, err)
 	}
 	i.Id = meta.ID.String()
 	return s.Id(ctx, i.Id)
@@ -119,7 +120,7 @@ func (s UserArango) Delete(ctx context.Context, id string) error {
 	}
 	_, err := s.Coll.RemoveDocument(ctx, docId.Key())
 	if err != nil {
-		return err
+		return logger.Arango(ctx, err)
 	}
 	return nil
 }
@@ -132,7 +133,7 @@ func (s UserArango) Id(ctx context.Context, id string) (*model.User, error) {
 	user := model.User{}
 	_, err := s.Coll.ReadDocument(ctx, docId.Key(), &user)
 	if err != nil {
-		return nil, err
+		return nil, logger.Arango(ctx, err)
 	}
 	return &user, nil
 }
@@ -143,14 +144,24 @@ func (s UserArango) Search(ctx context.Context, i model.SearchI) (*model.UserLis
 	if i.Text != nil {
 		vars["text"] = *i.Text
 		query = `for user in Fulltext(users, "name", CONCAT("prefix:", @text), @limit)
-		filter user.level > @level
+		filter user.level >= @level
 		limit @skip, @limit
-		return user`
+		let files =(
+			for edge in fileOwned
+				filter edge._from == user._id
+				return document(edge._to)
+		)
+		return merge(user, {"files":files})`
 	} else {
 		query = `for user in users
-		filter user.level > @level
+		filter user.level >= @level
 		limit @skip, @limit
-		return user`
+		let files =(
+			for edge in fileOwned
+				filter edge._from == user._id
+				return document(edge._to)
+		)
+		return merge(user, {"files":files})`
 	}
 	vars["limit"] = i.Limit
 	vars["skip"] = i.Skip
@@ -158,18 +169,18 @@ func (s UserArango) Search(ctx context.Context, i model.SearchI) (*model.UserLis
 
 	curs, err := s.Db.Query(ctx, query, vars)
 	if err != nil {
-		return nil, err
+		return nil, logger.Arango(ctx, err)
 	}
 	total := curs.Count()
 	defer curs.Close()
-	result := []model.UserItem{}
+	result := []model.UserWithFile{}
 	for {
-		var doc model.UserItem
+		var doc model.UserWithFile
 		_, err = curs.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break
 		} else if err != nil {
-			return nil, err
+			return nil, logger.Arango(ctx, err)
 		}
 		result = append(result, doc)
 	}
@@ -187,7 +198,7 @@ func (s UserArango) GetByEmail(ctx context.Context, email string) (*model.User, 
 	vars["email"] = email
 	curs, err := s.Db.Query(ctx, query, vars)
 	if err != nil {
-		return nil, err
+		return nil, logger.Arango(ctx, err)
 	}
 	defer curs.Close()
 	for {
@@ -196,7 +207,7 @@ func (s UserArango) GetByEmail(ctx context.Context, email string) (*model.User, 
 		if driver.IsNoMoreDocuments(err) {
 			break
 		} else if err != nil {
-			return nil, err
+			return nil, logger.Arango(ctx, err)
 		}
 		return &doc, nil
 	}
