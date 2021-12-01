@@ -8,4 +8,5 @@ const (
 	InvalidIdType        ErrorType = 2
 	NotFoundType         ErrorType = 3
 	InvalidPasswordType  ErrorType = 4
+	UnimplementedType    ErrorType = 5
 )

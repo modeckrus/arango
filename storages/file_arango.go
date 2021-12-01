@@ -13,6 +13,7 @@ type FileArango struct {
 	Db    driver.Database
 	Coll  driver.Collection
 	Owned driver.Collection
+	StorageHelper
 }
 
 func NewFileArango(ctx context.Context, c driver.Client) (FileArango, error) {
@@ -72,18 +73,22 @@ func NewFileArango(ctx context.Context, c driver.Client) (FileArango, error) {
 		Db:    db,
 		Coll:  coll,
 		Owned: owned,
+		StorageHelper: StorageHelper{
+			CollName: collName,
+		},
 	}
 	return result, nil
 }
 
-func (s FileArango) Create(ctx context.Context, i model.CreateFile) (*model.File, error) {
+func (s FileArango) Create(ctx context.Context, i model.CreateFile) (model.File, error) {
 	meta, err := s.Coll.CreateDocument(ctx, i)
+	result := model.File{}
 	if err != nil {
-		return nil, logger.Arango(ctx, err)
+		return result, logger.Arango(ctx, err)
 	}
 	u, ok := ctx.Value(model.UserContext{}).(model.User)
 	if !ok {
-		return nil, logger.SomethingWrong(ctx)
+		return result, logger.SomethingWrong(ctx)
 	}
 	edge := model.Edge{
 		From: u.Id,
@@ -91,55 +96,54 @@ func (s FileArango) Create(ctx context.Context, i model.CreateFile) (*model.File
 	}
 	_, err = s.Owned.CreateDocument(ctx, edge)
 	if err != nil {
-		return nil, logger.Arango(ctx, err)
+		return result, logger.Arango(ctx, err)
 	}
-	result := model.File{
+	result = model.File{
 		Id:   meta.ID.String(),
 		Name: i.Name,
 		Type: i.Type,
 	}
-	return &result, nil
+	return result, nil
 }
 
-func (s FileArango) Id(ctx context.Context, id string) (*model.File, error) {
-	docId := driver.DocumentID(id)
-	if err := docId.Validate(); err != nil {
-		return nil, logger.InvalidId(ctx, id)
-	}
+func (s FileArango) Id(ctx context.Context, id string) (model.File, error) {
+
 	result := model.File{}
-	_, err := s.Coll.ReadDocument(ctx, docId.Key(), &result)
+
+	_, err := s.Coll.ReadDocument(ctx, id, &result)
 	if err != nil {
-		return nil, logger.Arango(ctx, err)
+		return result, logger.Arango(ctx, err)
 	}
 
-	return &result, nil
+	return result, nil
 }
-func (s FileArango) ByUser(ctx context.Context, uid string) (*model.FileList, error) {
+func (s FileArango) ByUser(ctx context.Context, uid string) (model.FileList, error) {
 	query := `for edge in fileOwned
     filter edge._from == @user
     return document(edge._to)`
 	vars := make(map[string]interface{})
 	vars["user"] = uid
-
+	result := model.FileList{}
 	curs, err := s.Db.Query(ctx, query, vars)
 	if err != nil {
-		return nil, logger.Arango(ctx, err)
+		return result, logger.Arango(ctx, err)
 	}
 	defer curs.Close()
 	total := curs.Count()
-	result := []model.File{}
+	list := []model.File{}
 	for {
 		var doc model.File
 		_, err = curs.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break
 		} else if err != nil {
-			return nil, logger.Arango(ctx, err)
+			return result, logger.Arango(ctx, err)
 		}
-		result = append(result, doc)
+		list = append(list, doc)
 	}
-	return &model.FileList{
-		Files: result,
+	result = model.FileList{
+		Files: list,
 		Total: total,
-	}, nil
+	}
+	return result, nil
 }

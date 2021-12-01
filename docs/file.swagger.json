@@ -31,7 +31,7 @@
     "apiFileList": {
       "type": "object",
       "properties": {
-        "files": {
+        "items": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiFileR"
@@ -64,11 +64,14 @@
     "protobufAny": {
       "type": "object",
       "properties": {
-        "@type": {
+        "typeUrl": {
           "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
         }
-      },
-      "additionalProperties": {}
+      }
     },
     "rpcStatus": {
       "type": "object",

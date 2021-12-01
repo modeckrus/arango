@@ -1,0 +1,46 @@
+syntax = "proto3";
+package api;
+option go_package = "./../api";
+import "common.proto";
+import "tag.proto";
+//Service Manager Resp
+message ServiceMR{
+    string id = 1;
+    Trs name = 2;
+    Trs description = 3;
+}
+//Service User Resp
+message ServiceUR{
+    string id = 1;
+    string name = 2;
+    string description = 3;
+}
+
+message ServiceCreateI{
+    AuthI auth = 1;
+    Trs name = 2;
+    Trs description = 3;
+}
+message ServiceUpdateI{
+    AuthI auth = 1;
+    string id = 2;
+    Trs name = 3;
+    Trs description = 4;
+}
+message ServiceItem{
+    string id = 1;
+    string name = 2;
+}
+message ServiceListR{
+    repeated ServiceItem items = 1;
+}
+service ServiceS{
+    rpc Create(ServiceCreateI)returns(ServiceMR){}
+    rpc Update(ServiceUpdateI)returns(ServiceMR){}
+    rpc Delete(GetByIdI)returns(StatusR){}
+    rpc IdM(GetByIdI)returns(ServiceMR){}
+    rpc IdU(GetByIdI)returns(ServiceUR){}
+    rpc Search(SearchI)returns(ServiceListR){}
+    rpc Airport(GetByCodeI)returns(ServiceListR){}
+    rpc SearchAirport(SearchWithCodeI)returns(ServiceListR){}
+}

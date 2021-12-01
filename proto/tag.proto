@@ -1,0 +1,38 @@
+syntax = "proto3";
+package api;
+option go_package = "./../api";
+import "common.proto";
+
+message TagR{
+    string id = 1;
+    Trs text = 2;
+}
+
+message TagUpdateI{
+    AuthI auth = 1;
+    string id = 2;
+    Trs text = 3;
+}
+message TagCreateI{
+    AuthI auth = 1;
+    Trs text = 2;
+}
+message TagListR{
+    repeated TagR items = 1;
+}
+//Add/Delete Tag from Object
+message ADTagI{
+    AuthI auth = 1;
+    string tag_id = 2;
+    string object_id = 3;
+}
+service TagS{
+    rpc Create(TagCreateI)returns(TagR){}
+    rpc Update(TagUpdateI)returns(TagR){}
+    rpc Delete(GetByIdI)returns(TagR){}
+    rpc Id(GetByIdI)returns(TagR){}
+    rpc Search(SearchI)returns(TagListR){}
+    rpc Service(GetByIdI)returns(TagListR){}
+    rpc AddToService(ADTagI)returns(TagListR){}
+    rpc DeleteFromService(ADTagI)returns(TagListR){}
+}

@@ -20,13 +20,12 @@ func NewAuthService(user storages.UserI) AuthService {
 }
 
 func (s AuthService) Auth(ctx context.Context, i *api.AuthI, level model.UserLevel) (context.Context, error) {
-	userPtr, err := s.User.Id(ctx, i.Token)
+	user, err := s.User.Id(ctx, i.Token)
 	l := i.Locale
 	l = strings.ToLower(l)
 	if err != nil {
 		return ctx, logger.Unauth(l)
 	}
-	user := *userPtr
 	ctx = context.WithValue(ctx, model.UserContext{}, user)
 	ctx = context.WithValue(ctx, model.LocaleContext{}, i.Locale)
 	if user.Level < level {

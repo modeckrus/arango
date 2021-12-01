@@ -10,7 +10,7 @@ const (
 )
 
 type File struct {
-	Id   string   `json:"_id"`
+	Id   string   `json:"_key"`
 	Name string   `json:"name"`
 	Type FileType `json:"type"`
 }
@@ -25,7 +25,7 @@ func (i FileList) ToProto() *api.FileList {
 		list = append(list, file.ToProto())
 	}
 	return &api.FileList{
-		Files: list,
+		Items: list,
 	}
 }
 

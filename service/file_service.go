@@ -25,7 +25,7 @@ func NewFileService(grpcServer *grpc.Server, auth AuthService, file storages.Fil
 }
 func (s FileService) Create(ctx context.Context, i *api.AddFileI) (*api.FileR, error) {
 	ctx = model.SignMethod(ctx, "FileService.Create")
-	ctx, err := s.Auth(ctx, i.Auth, 1)
+	ctx, err := s.Auth(ctx, i.Auth, model.UserLevel_Auth)
 	if err != nil {
 		return nil, err
 	}
@@ -33,30 +33,28 @@ func (s FileService) Create(ctx context.Context, i *api.AddFileI) (*api.FileR, e
 		Name: i.Name,
 		Type: model.FileType(i.Type),
 	}
-	filePtr, err := s.File.Create(ctx, create)
+	file, err := s.File.Create(ctx, create)
 	if err != nil {
 		return nil, err
 	}
-	file := *filePtr
 	return file.ToProto(), nil
 }
 
 func (s FileService) Id(ctx context.Context, i *api.GetByIdI) (*api.FileR, error) {
 	ctx = model.SignMethod(ctx, "FileService.Id")
-	ctx, err := s.Auth(ctx, i.Auth, 1)
+	ctx, err := s.Auth(ctx, i.Auth, model.UserLevel_Auth)
 	if err != nil {
 		return nil, err
 	}
-	filePtr, err := s.File.Id(ctx, i.Id)
+	file, err := s.File.Id(ctx, i.Id)
 	if err != nil {
 		return nil, err
 	}
-	file := *filePtr
 	return file.ToProto(), nil
 }
 func (s FileService) User(ctx context.Context, i *api.GetByIdI) (*api.FileList, error) {
 	ctx = model.SignMethod(ctx, "FileService.User")
-	ctx, err := s.Auth(ctx, i.Auth, 1)
+	ctx, err := s.Auth(ctx, i.Auth, model.UserLevel_Auth)
 	if err != nil {
 		return nil, err
 	}

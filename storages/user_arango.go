@@ -13,6 +13,7 @@ type UserArango struct {
 	C    driver.Client
 	Db   driver.Database
 	Coll driver.Collection
+	StorageHelper
 }
 
 func NewUserArango(ctx context.Context, c driver.Client) (UserArango, error) {
@@ -53,6 +54,9 @@ func NewUserArango(ctx context.Context, c driver.Client) (UserArango, error) {
 		C:    c,
 		Db:   db,
 		Coll: coll,
+		StorageHelper: StorageHelper{
+			CollName: collName,
+		},
 	}
 	err = result.EnsureUsers(ctx)
 	if err != nil {
@@ -92,53 +96,47 @@ func (s UserArango) EnsureUsers(ctx context.Context) error {
 	}
 	return nil
 }
-func (s UserArango) Create(ctx context.Context, i model.CreateUser) (*model.User, error) {
+func (s UserArango) Create(ctx context.Context, i model.CreateUser) (model.User, error) {
 	meta, err := s.Coll.CreateDocument(ctx, i)
+	result := model.User{}
 	if err != nil {
-		return nil, err
+		return result, err
 	}
 	return s.Id(ctx, meta.ID.String())
 }
 
-func (s UserArango) Update(ctx context.Context, i model.UpdateUser) (*model.User, error) {
-	docId := driver.DocumentID(i.Id)
-	if err := docId.Validate(); err != nil {
-		return nil, logger.InvalidId(ctx, i.Id)
-	}
-	meta, err := s.Coll.UpdateDocument(ctx, docId.Key(), i)
+func (s UserArango) Update(ctx context.Context, i model.UpdateUser) (model.User, error) {
+	result := model.User{}
+
+	meta, err := s.Coll.UpdateDocument(ctx, i.Id, i)
 	if err != nil {
-		return nil, logger.Arango(ctx, err)
+		return result, logger.Arango(ctx, err)
 	}
 	i.Id = meta.ID.String()
 	return s.Id(ctx, i.Id)
 }
 
 func (s UserArango) Delete(ctx context.Context, id string) error {
-	docId := driver.DocumentID(id)
-	if err := docId.Validate(); err != nil {
-		return logger.InvalidId(ctx, id)
-	}
-	_, err := s.Coll.RemoveDocument(ctx, docId.Key())
+
+	_, err := s.Coll.RemoveDocument(ctx, id)
 	if err != nil {
 		return logger.Arango(ctx, err)
 	}
 	return nil
 }
 
-func (s UserArango) Id(ctx context.Context, id string) (*model.User, error) {
-	docId := driver.DocumentID(id)
-	if err := docId.Validate(); err != nil {
-		return nil, logger.InvalidId(ctx, id)
-	}
-	user := model.User{}
-	_, err := s.Coll.ReadDocument(ctx, docId.Key(), &user)
+func (s UserArango) Id(ctx context.Context, id string) (model.User, error) {
+	result := model.User{}
+
+	_, err := s.Coll.ReadDocument(ctx, id, &result)
 	if err != nil {
-		return nil, logger.Arango(ctx, err)
+		return result, logger.Arango(ctx, err)
 	}
-	return &user, nil
+	return result, nil
 }
 
-func (s UserArango) Search(ctx context.Context, i model.SearchI) (*model.UserList, error) {
+func (s UserArango) Search(ctx context.Context, i model.SearchI) (model.UserList, error) {
+	result := model.UserList{}
 	query := ""
 	vars := make(map[string]interface{})
 	if i.Text != nil {
@@ -169,28 +167,30 @@ func (s UserArango) Search(ctx context.Context, i model.SearchI) (*model.UserLis
 
 	curs, err := s.Db.Query(ctx, query, vars)
 	if err != nil {
-		return nil, logger.Arango(ctx, err)
+		return result, logger.Arango(ctx, err)
 	}
 	total := curs.Count()
 	defer curs.Close()
-	result := []model.UserWithFile{}
+	list := []model.UserWithFile{}
 	for {
 		var doc model.UserWithFile
 		_, err = curs.ReadDocument(ctx, &doc)
 		if driver.IsNoMoreDocuments(err) {
 			break
 		} else if err != nil {
-			return nil, logger.Arango(ctx, err)
+			return result, logger.Arango(ctx, err)
 		}
-		result = append(result, doc)
+		list = append(list, doc)
 	}
-	return &model.UserList{
+	result = model.UserList{
 		Total: total,
-		List:  result,
-	}, nil
+		List:  list,
+	}
+	return result, nil
 }
 
-func (s UserArango) GetByEmail(ctx context.Context, email string) (*model.User, error) {
+func (s UserArango) GetByEmail(ctx context.Context, email string) (model.User, error) {
+	result := model.User{}
 	query := `for user in users
     filter user.email == @email
     return user`
@@ -198,18 +198,17 @@ func (s UserArango) GetByEmail(ctx context.Context, email string) (*model.User, 
 	vars["email"] = email
 	curs, err := s.Db.Query(ctx, query, vars)
 	if err != nil {
-		return nil, logger.Arango(ctx, err)
+		return result, logger.Arango(ctx, err)
 	}
 	defer curs.Close()
 	for {
-		var doc model.User
-		_, err = curs.ReadDocument(ctx, &doc)
+		_, err = curs.ReadDocument(ctx, &result)
 		if driver.IsNoMoreDocuments(err) {
 			break
 		} else if err != nil {
-			return nil, logger.Arango(ctx, err)
+			return result, logger.Arango(ctx, err)
 		}
-		return &doc, nil
+		return result, nil
 	}
-	return nil, logger.NotFound(ctx, email)
+	return result, logger.NotFound(ctx, email)
 }

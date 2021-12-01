@@ -9,6 +9,10 @@ message GetByIdI{
     AuthI auth = 1;
     string id = 2;
 }
+message GetByCodeI{
+    AuthI auth = 1;
+    string code = 2;
+}
 message StatusR{
     bool ok = 1;
 }
@@ -17,4 +21,19 @@ message SearchI{
     optional string text = 2;
     int64 skip = 3;
     int64 limit = 4;
+}
+
+message Tr{
+    string lang = 1;
+    string text = 2;
+}
+message Trs{
+    repeated Tr trs = 1;
+}
+message SearchWithCodeI{
+    AuthI auth = 1;
+    optional string text = 2;
+    int64 skip = 3;
+    int64 limit = 4;
+    string code = 5;
 }

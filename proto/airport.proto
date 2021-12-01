@@ -1,0 +1,46 @@
+syntax = "proto3";
+package api;
+option go_package = "./../api";
+import "common.proto";
+
+message AirportMR{
+    string code = 1;
+    Trs name = 2;
+    Trs city = 3;
+    Trs country = 4;
+    string countryCode = 5;
+}
+message AirportUR{
+    string code = 1;
+    string name = 2;
+    string city = 3;
+    string country = 4;
+    string countryCode = 5;
+}
+message AirportI{
+    AuthI auth = 1;
+    string code = 2;
+    Trs name = 3;
+    Trs city = 4;
+    Trs country = 5;
+    string countryCode = 6;
+}
+message AirportItem{
+    string code = 1;
+    string name = 2;
+    string city = 3;
+    string country = 4;
+}
+message AirportListR{
+    repeated AirportItem items = 1;
+}
+service AirportS{
+    rpc Create(AirportI)returns(AirportMR){}
+    rpc Update(AirportI)returns(AirportMR){}
+    rpc Delete(GetByCodeI)returns(StatusR){}
+    rpc CodeM(GetByCodeI)returns(AirportMR){}
+    rpc CodeU(GetByCodeI)returns(AirportUR){}
+    rpc Search(SearchI)returns(AirportListR){}
+    rpc Service(GetByIdI)returns(AirportListR){}
+}
+

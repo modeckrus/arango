@@ -31,13 +31,13 @@ class FileService {
       throw e;
     }
   }
-  Future<List<File>?> user({required String id})async{
+
+  Future<List<File>?> user({required String id}) async {
     try {
-      final resp = await client.user(GetByIdI(
-          auth: GetIt.I.get<Auth>().toProto(),
-          id: id));
+      final resp = await client
+          .user(GetByIdI(auth: GetIt.I.get<Auth>().toProto(), id: id));
       List<File> result = [];
-      for (var file in resp.files) {
+      for (var file in resp.items) {
         result.add(File.fromProto(file));
       }
       return result;

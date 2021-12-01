@@ -1,9 +1,16 @@
 ///
+//  Generated code. Do not modify.
+//  source: file.proto
+//
+// @dart = 2.12
+// ignore_for_file: annotate_overrides,camel_case_types,unnecessary_const,non_constant_identifier_names,library_prefixes,unused_import,unused_shown_name,return_of_invalid_type,unnecessary_this,prefer_final_fields
+
 import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
 import 'common.pb.dart' as $1;
+
 import 'file.pbenum.dart';
 
 export 'file.pbenum.dart';
@@ -162,17 +169,17 @@ class AddFileI extends $pb.GeneratedMessage {
 
 class FileList extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'FileList', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'api'), createEmptyInstance: create)
-    ..pc<FileR>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'files', $pb.PbFieldType.PM, subBuilder: FileR.create)
+    ..pc<FileR>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'items', $pb.PbFieldType.PM, subBuilder: FileR.create)
     ..hasRequiredFields = false
   ;
 
   FileList._() : super();
   factory FileList({
-    $core.Iterable<FileR>? files,
+    $core.Iterable<FileR>? items,
   }) {
     final _result = create();
-    if (files != null) {
-      _result.files.addAll(files);
+    if (items != null) {
+      _result.items.addAll(items);
     }
     return _result;
   }
@@ -198,6 +205,6 @@ class FileList extends $pb.GeneratedMessage {
   static FileList? _defaultInstance;
 
   @$pb.TagNumber(1)
-  $core.List<FileR> get files => $_getList(0);
+  $core.List<FileR> get items => $_getList(0);
 }
 

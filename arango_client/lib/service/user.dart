@@ -47,35 +47,39 @@ class UserService {
         skip: f.Int64(skip),
         limit: f.Int64(limit)));
     List<UserItem> result = [];
-    for (var element in resp.list) {
+    for (var element in resp.items) {
       result.add(UserItem.fromProto(element));
     }
     return result;
   }
-  Future<User?> create({required String name, required String email, required UserLevel level, required String password})async{
+
+  Future<User?> create(
+      {required String name,
+      required String email,
+      required UserLevel level,
+      required String password}) async {
     try {
       final user = await client.create(CreateUserI(
-        auth: GetIt.I.get<Auth>().toProto(),
-        name: name,
-        email: email,
-        level: userLevelToProto(level),
-        password: password
-      ));
+          auth: GetIt.I.get<Auth>().toProto(),
+          name: name,
+          email: email,
+          level: userLevelToProto(level),
+          password: password));
       return User.fromProto(user);
     } catch (e) {
       throw e;
     }
   }
-  Future<User?> update({required User i, String? password})async{
+
+  Future<User?> update({required User i, String? password}) async {
     try {
       final user = await client.update(UpdateUserI(
-        auth: GetIt.I.get<Auth>().toProto(),
-        id: i.id,
-        name: i.name,
-        email: i.email,
-        level: userLevelToProto(i.level),
-        password: password
-      ));
+          auth: GetIt.I.get<Auth>().toProto(),
+          id: i.id,
+          name: i.name,
+          email: i.email,
+          level: userLevelToProto(i.level),
+          password: password));
       return User.fromProto(user);
     } catch (e) {
       throw e;

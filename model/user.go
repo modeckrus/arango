@@ -7,21 +7,21 @@ import (
 )
 
 var Root User = User{
-	Id:       "users/666",
+	Id:       "666",
 	Name:     "root",
 	Email:    "root@root.com",
 	Level:    UserLevel_Admin,
 	Password: "123",
 }
 var System User = User{
-	Id:    "users/667",
+	Id:    "667",
 	Name:  "system",
 	Email: "system@root.com",
 	Level: UserLevel_Admin,
 }
 
 type User struct {
-	Id       string    `json:"_id"`
+	Id       string    `json:"_key"`
 	Name     string    `json:"name"`
 	Email    string    `json:"email"`
 	Level    UserLevel `json:"level"`
@@ -74,7 +74,7 @@ func (i User) CheckPermission(o User) bool {
 }
 
 type UpdateUser struct {
-	Id       string     `json:"id"`
+	Id       string     `json:"_key"`
 	Name     *string    `json:"name"`
 	Email    *string    `json:"email"`
 	Level    *UserLevel `json:"level"`
@@ -98,7 +98,7 @@ func (i User) ToProto() *api.UserR {
 }
 
 type UserItem struct {
-	Id    string    `json:"_id"`
+	Id    string    `json:"_key"`
 	Name  string    `json:"name" bson:"name"`
 	Level UserLevel `json:"level"`
 }
@@ -114,7 +114,7 @@ func (i UserList) ToProto() *api.UserListR {
 	}
 	return &api.UserListR{
 		Total: i.Total,
-		List:  list,
+		Items: list,
 	}
 }
 

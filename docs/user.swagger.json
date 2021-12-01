@@ -95,7 +95,7 @@
     "apiUserListR": {
       "type": "object",
       "properties": {
-        "list": {
+        "items": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/apiUserItemR"
@@ -130,11 +130,14 @@
     "protobufAny": {
       "type": "object",
       "properties": {
-        "@type": {
+        "typeUrl": {
           "type": "string"
+        },
+        "value": {
+          "type": "string",
+          "format": "byte"
         }
-      },
-      "additionalProperties": {}
+      }
     },
     "rpcStatus": {
       "type": "object",

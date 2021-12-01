@@ -37,11 +37,10 @@ func (s UserService) Create(ctx context.Context, i *api.CreateUserI) (*api.UserR
 		Level:    model.UserLevel(i.Level),
 		Password: i.Password,
 	}
-	newUserPtr, err := s.User.Create(ctx, createUser)
+	newUser, err := s.User.Create(ctx, createUser)
 	if err != nil {
 		return nil, err
 	}
-	newUser := *newUserPtr
 	return newUser.ToProto(), nil
 }
 
@@ -51,11 +50,11 @@ func (s UserService) Update(ctx context.Context, i *api.UpdateUserI) (*api.UserR
 	if err != nil {
 		return nil, err
 	}
-	userPtr, err := s.User.Id(ctx, i.Id)
+	user, err := s.User.Id(ctx, i.Id)
 	if err != nil {
 		return nil, err
 	}
-	user := *userPtr
+
 	err = s.ValidatePermissionForUserUpdate(ctx, user)
 	if err != nil {
 		return nil, err
@@ -73,11 +72,10 @@ func (s UserService) Update(ctx context.Context, i *api.UpdateUserI) (*api.UserR
 		Avatar:   i.AvatarId,
 		Password: i.Password,
 	}
-	newUserPtr, err := s.User.Update(ctx, newUser)
+	result, err := s.User.Update(ctx, newUser)
 	if err != nil {
 		return nil, err
 	}
-	result := *newUserPtr
 	return result.ToProto(), nil
 }
 
@@ -87,11 +85,11 @@ func (s UserService) Delete(ctx context.Context, i *api.GetByIdI) (*api.StatusR,
 	if err != nil {
 		return nil, err
 	}
-	userPtr, err := s.User.Id(ctx, i.Id)
+	user, err := s.User.Id(ctx, i.Id)
 	if err != nil {
 		return nil, err
 	}
-	user := *userPtr
+
 	u, ok := ctx.Value(model.UserContext{}).(model.User)
 	if !ok {
 		return nil, logger.SomethingWrong(ctx)
@@ -112,11 +110,10 @@ func (s UserService) Id(ctx context.Context, i *api.GetByIdI) (*api.UserR, error
 	if err != nil {
 		return nil, err
 	}
-	userPtr, err := s.User.Id(ctx, i.Id)
+	user, err := s.User.Id(ctx, i.Id)
 	if err != nil {
 		return nil, err
 	}
-	user := *userPtr
 	return user.ToProto(), nil
 }
 
@@ -132,21 +129,21 @@ func (s UserService) Search(ctx context.Context, i *api.SearchI) (*api.UserListR
 		Skip:  i.Skip,
 		Limit: i.Limit,
 	}
-	listPtr, err := s.User.Search(ctx, search)
+	list, err := s.User.Search(ctx, search)
 	if err != nil {
 		return nil, err
 	}
-	list := *listPtr
+
 	return list.ToProto(), nil
 }
 func (s UserService) AuthByEmail(ctx context.Context, i *api.AuthByEmailI) (*api.AuthI, error) {
 	ctx = model.SignMethod(ctx, "UserService.AuthByEmail")
 	ctx = context.WithValue(ctx, model.LocaleContext{}, i.Locale)
-	userPtr, err := s.User.GetByEmail(ctx, i.Email)
+	user, err := s.User.GetByEmail(ctx, i.Email)
 	if err != nil {
 		return nil, err
 	}
-	user := *userPtr
+
 	ctx = context.WithValue(ctx, model.UserContext{}, user)
 	if !user.ComparePassword(i.Password) {
 		return nil, logger.InvalidPassword(ctx, i.Password)

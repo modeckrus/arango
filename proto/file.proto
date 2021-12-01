@@ -19,7 +19,7 @@ message AddFileI{
 }
 
 message FileList{
-    repeated FileR files = 1;
+    repeated FileR items = 1;
 }
 
 service FileS{

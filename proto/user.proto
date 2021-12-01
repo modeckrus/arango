@@ -23,7 +23,7 @@ message UserItemR{
     repeated FileR files = 6;
 }
 message UserListR{
-    repeated UserItemR list = 1;
+    repeated UserItemR items = 1;
     int64 total = 2;
 }
 message CreateUserI{
