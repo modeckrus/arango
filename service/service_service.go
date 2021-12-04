@@ -20,18 +20,18 @@ func NewServiceService(auth AuthService, service storages.ServiceI) ServiceServi
 	}
 }
 func (s ServiceService) Create(ctx context.Context, i *api.ServiceCreateI) (*api.ServiceMR, error) {
-	ctx = model.SignMethod(ctx, "AirportService.Create")
+	ctx = model.SignMethod(ctx, "ServiceService.Create")
 	ctx, err := s.Auth(ctx, i.Auth, model.UserLevel_Moderator)
 	if err != nil {
 		return nil, err
 	}
-	airport := model.NewService()
-	airport.FromProtoI(i)
-	airport, err = s.Service.Create(ctx, airport)
+	create := model.NewServiceCreate()
+	create.FromProto(i)
+	service, err := s.Service.Create(ctx, create)
 	if err != nil {
 		return nil, err
 	}
-	return airport.ToProtoM(), nil
+	return service.ToProtoM(), nil
 }
 
 func (s ServiceService) Update(ctx context.Context, i *api.ServiceUpdateI) (*api.ServiceMR, error) {

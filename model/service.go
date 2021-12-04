@@ -3,10 +3,26 @@ package model
 import "arango/api"
 
 type Service struct {
-	Id          string
-	Name        Trs
-	Description Trs
+	Id string `json:"_key,omitempty"`
+	ServiceCreate
 }
+type ServiceCreate struct {
+	Name        Trs `json:"name,omitempty"`
+	Description Trs `json:"description,omitempty"`
+}
+
+func NewServiceCreate() ServiceCreate {
+	return ServiceCreate{
+		Name:        make(Trs),
+		Description: make(Trs),
+	}
+}
+
+func (s *ServiceCreate) FromProto(i *api.ServiceCreateI) {
+	s.Name = TrsFromProto(i.Name)
+	s.Description = TrsFromProto(i.Description)
+}
+
 type ServiceList []Service
 
 func (s ServiceList) ToProto(l string) *api.ServiceListR {
@@ -29,7 +45,7 @@ func (s *Service) FromProto(i *api.ServiceUpdateI) {
 	s.Name = TrsFromProto(i.Name)
 	s.Description = TrsFromProto(i.Description)
 }
-func (s Service) ToProto() *api.ServiceMR {
+func (s Service) ToProtoM() *api.ServiceMR {
 	return &api.ServiceMR{
 		Id:          s.Id,
 		Name:        s.Name.ToProto(),
